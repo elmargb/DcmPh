@@ -1,5 +1,5 @@
 {
-    "name": "halsoft/DcmPh",
+    "name": "halsoft/dcmph",
     "description": "A php interface to offis's dcmtk",
     "keywords": ["dicom", "pacs"],
     "homepage": "https://github.com/halsoft/DcmPh",
