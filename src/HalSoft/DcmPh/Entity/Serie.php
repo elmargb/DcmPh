@@ -9,57 +9,29 @@ use HalSoft\DcmPh\Dcmtk\DicomDictionary;
 
 class Serie extends DicomResponse implements DicomObjectInterface
 {
-    protected $serie_instance_uid;
-    protected $serie_id;
-    protected $serie_date;
-    protected $serie_time;
-    protected $serie_description;
-    protected $serie_number;
-
-    public function addElement($attributes, $value)
-    {
-        parent::addElement($attributes, $value);
-        if (isset($attributes['tag'])) {
-            switch ($attributes['tag']) {
-                case DicomDictionary::SERIES_INSTANCE_UID:
-                    $this->serie_instance_uid = $value;
-                    break;
-                case DicomDictionary::SERIES_NUMBER:
-                    $this->serie_number = $value;
-                    break;
-                case DicomDictionary::SERIES_DATE:
-                    $this->serie_date = $value;
-                    break;
-                case DicomDictionary::SERIES_TIME:
-                    $this->serie_time = $value;
-                    break;
-                case DicomDictionary::SERIES_NUMBER:
-                    $this->serie_number = $value;
-                    break;
-                case DicomDictionary::SERIES_DESCRIPTION:
-                    $this->serie_description = $value;
-                    break;
-            }
-        }
-    }
-    
     public function getInstanceUID()
     {
-        return $this->serie_instance_uid?$this->serie_instance_uid:false;
+        if(isset($this->dicom_tags[DicomDictionary::SERIES_INSTANCE_UID])) {
+            return $this->dicom_tags[DicomDictionary::SERIES_INSTANCE_UID];
+        }
+        return false;
     }
     
     public function getNumber()
     {
-        return $this->serie_number?$this->serie_number:false;
+        if(isset($this->dicom_tags[DicomDictionary::SERIES_NUMBER])) {
+            return $this->dicom_tags[DicomDictionary::SERIES_NUMBER];
+        }
+        return false;
     }
     
     public function getDateTime($format = null)
     {
-        if($this->serie_date == null || $this->serie_time == null) {
+        if(!isset($this->dicom_tags[DicomDictionary::SERIES_DATE]) || !isset($this->dicom_tags[DicomDictionary::SERIES_TIME])) {
             return false;
         }
-        $res = \DateTime::createFromFormat('YmdHis', $this->study_date.$this->study_time);
-        
+        $res = \DateTime::createFromFormat('YmdHis', $this->dicom_tags[DicomDictionary::SERIES_DATE].$this->dicom_tags[DicomDictionary::SERIES_TIME]);
+
         if($format == null) {
             return $res;
         } else {
@@ -69,6 +41,9 @@ class Serie extends DicomResponse implements DicomObjectInterface
     
     public function getDescription()
     {
-        return $this->serie_description?$this->serie_description:false;
+        if(isset($this->dicom_tags[DicomDictionary::SERIES_DESCRIPTION])) {
+            return $this->dicom_tags[DicomDictionary::SERIES_DESCRIPTION];
+        }
+        return false;
     }
 }

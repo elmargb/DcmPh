@@ -9,21 +9,6 @@ use HalSoft\DcmPh\Dcmtk\DicomDictionary;
 
 class Study extends DicomResponse implements DicomObjectInterface
 {
-    protected $study_instance_uid;
-    protected $study_id;
-    protected $study_date;
-    protected $study_time;
-    protected $study_description;
-    protected $study_modality;
-
-    public function addElement($attributes, $value)
-    {
-        parent::addElement($attributes, $value);
-        if (isset($attributes['tag'])) {
-            $this->dicom_tags[$attributes['tag']] = $value;
-        }
-    }
-    
     public function getInstanceUID()
     {
         if(isset($this->dicom_tags[DicomDictionary::STUDY_INSTANCE_UID])) {

@@ -9,16 +9,6 @@ use HalSoft\DcmPh\Dcmtk\DicomDictionary;
 
 class Instance extends DicomResponse implements DicomObjectInterface
 {
-    protected $dicom_tags = array();
-    
-    public function addElement($attributes, $value)
-    {
-        parent::addElement($attributes, $value);
-        if (isset($attributes['tag'])) {
-            $this->dicom_tags[$attributes['tag']] = $value;
-        }
-    }
-    
     public function getAcquisitionDateTime($format = null)
     {
         if(!isset($this->dicom_tags[DicomDictionary::ACQUISITION_DATE]) || !isset($this->dicom_tags[DicomDictionary::ACQUISITION_TIME])) {

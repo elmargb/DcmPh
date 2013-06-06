@@ -9,17 +9,6 @@ use HalSoft\DcmPh\Dcmtk\DicomDictionary;
 
 class Patient extends DicomResponse implements DicomObjectInterface
 {
-    protected $dicom_tags = array();
-
-
-    public function addElement($attributes, $value)
-    {
-        parent::addElement($attributes, $value);
-        if (isset($attributes['tag'])) {
-            $this->dicom_tags[$attributes['tag']] = $value;
-        }
-    }
-    
     public function getName()
     {
         if(isset($this->dicom_tags[DicomDictionary::PATIENT_NAME])) {
