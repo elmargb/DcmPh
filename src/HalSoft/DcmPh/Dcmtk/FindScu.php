@@ -14,11 +14,9 @@ abstract class FindScu
     protected $calling_aet;
     protected $called_aet;
     protected $pacs_ip;
-    protected $pacs_port;
-    
+    protected $pacs_port;    
     protected $parameters;
     protected $query_information_model;
-
 
     public function __construct($called_aet, $pacs_ip, $pacs_port, $calling_aet = null)
     {
@@ -39,6 +37,36 @@ abstract class FindScu
      */
     protected function executeFindscu(DicomObjectContainerInterface $container)
     {
+        $this->execFindScu();
+        
+        $dir = opendir("./");
+        $answers = 0;
+
+        while (($filename = readdir($dir)) !== false) {
+            if (preg_match("/^rsp[0-9]{4}\.dcm$/", $filename)) {
+                
+                $answer = $container->newDicomObject();
+                $sxml = $this->getSimplXmlFromDicomFile($filename);
+                $elements = $sxml->xpath("/file-format/data-set/element");
+                
+                foreach ($elements as $element) {
+                    $element_attributes = array();
+                    foreach($element->attributes() as $attribute => $value) {
+                        $element_attributes[$attribute] = (string) $value;
+                    }
+                    $answer->addElement($element_attributes, (string) $element);
+                }
+                
+                $container->addDicomObject($answer);
+                $answers++;
+            }
+        }
+        closedir($dir);
+        return true;
+    }
+    
+    public function execFindScu()
+    {
         $command = "findscu -X ".$this->query_information_model;
         foreach ($this->parameters as $key => $val) {
             $command .= " -k $key";
@@ -49,31 +77,20 @@ abstract class FindScu
         $command .= " -aec $this->called_aet -aet $this->calling_aet $this->pacs_ip $this->pacs_port  2> /dev/null";
         
         exec($command);
-        
-        $dir = opendir("./");
-        $answers = 0;
-
-        while (($file = readdir($dir)) !== false) {
-            if (preg_match("/^rsp[0-9]{4}\.dcm$/", $file)) {
-                exec("dcm2xml $file out.xml 2> /dev/null", $output);
-                unlink($file);
-                $answer = $container->newDicomObject();
-                $sxml = simplexml_load_file("out.xml");
-                $elements = $sxml->xpath("/file-format/data-set/element");
-                
-                foreach ($elements as $element) {
-                    $element_attributes = array();
-                    foreach($element->attributes() as $attribute => $value) {
-                        $element_attributes[$attribute] = (string) $value;
-                    }
-                    $answer->addElement($element_attributes, (string) $element);
-                }
-                $container->addDicomObject($answer);
-                unlink("out.xml");
-                $answers++;
-            }
+    }
+    
+    public function getSimplXmlFromDicomFile($filename, $unlink = true)
+    {
+        if(!file_exists($filename)) {
+            return false;
         }
-        closedir($dir);
-        return true;
+        $random_filename = md5("xml_outfile_".rand(10000, 99999)).".xml";
+        exec("dcm2xml $filename $random_filename 2> /dev/null");
+        $sxml = simplexml_load_file($random_filename);
+        if($unlink) {
+            unlink($filename);
+            unlink($random_filename);
+        }
+        return $sxml;
     }
 }
