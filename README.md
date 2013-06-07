@@ -58,3 +58,8 @@ to read dicom files. But I'm not sure for two reasons:
 - the last commit is aged 1 year
 - nanodicom is quite complete, it uses a huge and complete Dicom dictionary
 while I'd prefere to keep DcmPh....lighter
+
+License
+-------
+
+This library is licensed under the MIT license.
