@@ -1,6 +1,8 @@
 <?php
 namespace HalSoft\DcmPh\Entity;
 
+use Psr\Log\LoggerInterface;
+
 /**
  *
  * @author Luca Saba <luca.saba@halsoftware.org>
@@ -8,11 +10,14 @@ namespace HalSoft\DcmPh\Entity;
 class DicomResponse
 {
     protected $elements;
-    protected $dicom_tags = array();
-    
-    public function __construct()
+    protected $dicom_tags;
+    protected $logger;
+
+    public function __construct(LoggerInterface $logger = null)
     {
         $this->elements = array();
+        $this->dicom_tags = array();
+        $this->logger = $logger;
     }
     
     public function addElement($attributes, $value)
