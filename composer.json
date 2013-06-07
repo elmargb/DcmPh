@@ -1,9 +1,10 @@
 {
     "name": "halsoft/dcmph",
     "description": "A php interface to offis's dcmtk",
-    "keywords": ["dicom", "pacs"],
+    "keywords": ["dicom", "pacs", "php"],
     "homepage": "https://github.com/halsoft/DcmPh",
     "type": "library",
+    "license": "MIT",
     "authors": [
         {
             "name": "Luca Saba",
